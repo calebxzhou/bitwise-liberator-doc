@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using LiberatorDoc.DocOps;
 using LiberatorDoc.Models;
 using Microsoft.AspNetCore.Mvc;
+using Paragraph = DocumentFormat.OpenXml.Drawing.Paragraph;
 
 namespace LiberatorDoc.Controllers;
 
@@ -41,14 +42,14 @@ public class PjTestController : ControllerBase
         Body body = new Body(); 
         var p1 = Headings.CreateHeading1("3 系统测试");
         body.Append(p1);
-    
         for (var index = 0; index < modules.Count; index++)
         {
             var moduleTest = modules[index]; 
+            
             body.Append(Headings.CreateHeading2($"3.{index + 1} {moduleTest.Name}模块的测试"));
             body.Append(DocBodies.CreateMainBody($"{moduleTest.Name}模块的测试表，如表3.{index + 1}所示。"));
             var tableData = moduleTest.Cases.Select((testCase, i) => new List<string>
-                {
+                { 
                     $"{i + 1}",
                     testCase.Name,
                     testCase.Operation,
@@ -58,8 +59,9 @@ public class PjTestController : ControllerBase
                 })
                 .ToList();
             //测试三线表
-            body.Append(Tables.New(
-                $"表3.{index + 1} {moduleTest.Name}模块的测试表",
+            body.Append(Tables.CreateTableNameParagraph($"表3.{index + 1} {moduleTest.Name}模块的测试表"));
+            body.Append(Tables.Create3LineTable(
+                
                 new[]
                 {
                     new TableColumnProps(700,"编号",JustificationValues.Center,false),

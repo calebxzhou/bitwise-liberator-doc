@@ -12,13 +12,12 @@ public static class Tables
     //三线表 表名+表格 段落
     public static Paragraph New(string tableName, TableColumnProps[] props, List<List<string>> datas)
     {
-        var para = GetTableNameParagraph(tableName);
-        para.Append(new Paragraph());
+        var para = CreateTableNameParagraph(tableName);
         para.Append( Create3LineTable(props,datas));
         return para;
     }
 
-    private static Table Create3LineTable(TableColumnProps[] props,List<List<string>> contents)
+    public static Table Create3LineTable(TableColumnProps[] props,List<List<string>> contents)
     {
         var table = new Table();
         var tableProperties = new TableProperties();
@@ -148,7 +147,7 @@ public static class Tables
         return cell;
     }
     //表名段落 （eg 表3.1 管理员端的测试表）
-    private static Paragraph GetTableNameParagraph(string tableName)
+    public static Paragraph CreateTableNameParagraph(string tableName)
     {
         var para = new Paragraph();
         para.SetParagraphSpacing(0);
