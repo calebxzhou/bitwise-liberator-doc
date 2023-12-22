@@ -40,14 +40,14 @@ public class PjTestController : ControllerBase
         var mainPart = wDoc.AddMainDocumentPart();
         mainPart.Document = new Document();
         Body body = new Body(); 
-        var p1 = Headings.CreateHeading1("3 系统测试");
+        var p1 = DocHeadings.H1("3 系统测试");
         body.Append(p1);
         for (var index = 0; index < modules.Count; index++)
         {
             var moduleTest = modules[index]; 
             
-            body.Append(Headings.CreateHeading2($"3.{index + 1} {moduleTest.Name}模块的测试"));
-            body.Append(DocBodies.CreateMainBody($"{moduleTest.Name}模块的测试表，如表3.{index + 1}所示。"));
+            body.Append(DocHeadings.H2($"3.{index + 1} {moduleTest.Name}模块的测试"));
+            body.Append(DocBodies.Main($"{moduleTest.Name}模块的测试表，如表3.{index + 1}所示。"));
             var tableData = moduleTest.Cases.Select((testCase, i) => new List<string>
                 { 
                     $"{i + 1}",
@@ -59,8 +59,8 @@ public class PjTestController : ControllerBase
                 })
                 .ToList();
             //测试三线表
-            body.Append(Tables.CreateTableNameParagraph($"表3.{index + 1} {moduleTest.Name}模块的测试表"));
-            body.Append(Tables.Create3LineTable(
+            body.Append(DocHeadings.H6($"表3.{index + 1} {moduleTest.Name}模块的测试表"));
+            body.Append(DocTables.Create3LineTable(
                 
                 new[]
                 {

@@ -4,10 +4,10 @@ using static LiberatorDoc.DocOps.DocConst;
 namespace LiberatorDoc.DocOps;
 
 //标题
-public static class Headings
+public static class DocHeadings
 {
 //创建一级标题：  
-    public static Paragraph CreateHeading1(string text)
+    public static Paragraph H1(string text)
     {
         Paragraph para = new Paragraph();
         //居中
@@ -21,18 +21,18 @@ public static class Headings
         OutlineLevel outlineLevel1 = new OutlineLevel() { Val = 1 };
         paraProps.Append(outlineLevel1);
         //三号黑体
-        paraProps.Append(Fonts.GetFontProp(SimHei, Size3));
+        paraProps.Append(DocFonts.GetFontProp(SimHei, Size3));
         para.Append(paraProps);
         Run run = new Run();
         //三号黑体
-        run.Append(Fonts.GetFontProp(SimHei, Size3));
+        run.Append(DocFonts.GetFontProp(SimHei, Size3));
         run.Append(new Text(text));
         para.Append(run);
         return para;
     }
 
 //创建二级标题 
-    public static Paragraph CreateHeading2(string text)
+    public static Paragraph H2(string text)
     {
         Paragraph para = new Paragraph();
         //居左
@@ -45,18 +45,18 @@ public static class Headings
         OutlineLevel outlineLevel1 = new OutlineLevel() { Val = 2 };
         paraProps.Append(outlineLevel1);
         //四号黑体
-        paraProps.Append(Fonts.GetFontProp(SimHei, Size4));
+        paraProps.Append(DocFonts.GetFontProp(SimHei, Size4));
         para.Append(paraProps);
         Run run = new Run();
         //四号黑体
-        run.Append(Fonts.GetFontProp(SimHei, Size4));
+        run.Append(DocFonts.GetFontProp(SimHei, Size4));
         run.Append(new Text(text));
         para.Append(run);
         return para;
     }
 
 //创建三级标题： 
-    public static Paragraph CreateHeading3(string text)
+    public static Paragraph H3(string text)
     {
         Paragraph para = new Paragraph();
         //居左
@@ -65,18 +65,18 @@ public static class Headings
         para.SetParagraphSpacing(SpaceBeforeAfter6);
         ParagraphProperties paraProps = new ParagraphProperties();
         // 小四号，黑体
-        paraProps.Append(Fonts.GetFontProp(SimHei, Size4S));
+        paraProps.Append(DocFonts.GetFontProp(SimHei, Size4S));
         para.Append(paraProps);
         Run run = new Run();
         // 小四号，黑体
-        run.Append(Fonts.GetFontProp(SimHei, Size4S));
+        run.Append(DocFonts.GetFontProp(SimHei, Size4S));
         run.Append(new Text(text));
         para.Append(run);
         return para;
     }
 
 //创建小标题： 
-    public static Paragraph CreateHeadingS(string text)
+    public static Paragraph H4(string text)
     {
         Paragraph para = new Paragraph();
         //居左
@@ -87,13 +87,31 @@ public static class Headings
         text = ChineseSpace + ChineseSpace + text;
         ParagraphProperties paraProps = new ParagraphProperties();
         // 小四号，宋体
-        paraProps.Append(Fonts.GetFontProp(SimSun, Size4S));
+        paraProps.Append(DocFonts.GetFontProp(SimSun, Size4S));
         para.Append(paraProps);
         Run run = new Run();
         // 小四号，宋体
-        run.Append(Fonts.GetFontProp(SimSun, Size4S));
+        run.Append(DocFonts.GetFontProp(SimSun, Size4S));
         run.Append(new Text(text));
         para.Append(run);
+        return para;
+    }
+    //创建表/图描述（表1.1 xxxx表/图1.1 xxxx图）
+    public static Paragraph H6(string text)
+    {
+        var para = new Paragraph();
+        para.SetParagraphSpacing(0);
+        para.SetParagraphHorizontalAlign(JustificationValues.Center);
+        //黑体五号字
+        var paraProps = new ParagraphProperties();
+        paraProps.Append(DocFonts.GetFontProp(SimHei, Size5));
+        para.Append(paraProps);
+
+        var run = new Run();
+        run.Append(DocFonts.GetFontProp(SimHei, Size5));
+        run.Append(new Text(text));
+        para.Append(run);
+
         return para;
     }
 }

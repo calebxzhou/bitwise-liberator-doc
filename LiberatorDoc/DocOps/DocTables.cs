@@ -7,7 +7,7 @@ public record class TableColumnProps(int Width, string Header, JustificationValu
 {
     
 }
-public static class Tables
+public static class DocTables
 {
     //三线表 表名+表格 段落
     public static Paragraph New(string tableName, TableColumnProps[] props, List<List<string>> datas)
@@ -43,7 +43,7 @@ public static class Tables
             var header = prop.Header;
             var headerCell = CreateTextTableCellAlign(header, JustificationValues.Center,
                 TableVerticalAlignmentValues.Bottom, prop.Width);
-            //设置边框 表头上1磅下0.8磅
+            //设置边框 表头上1磅下0.75磅
             SetCellBorders(headerCell, 8, 6);
             headerRow.Append(headerCell);
         }
@@ -128,11 +128,11 @@ public static class Tables
         para.SetParagraphHorizontalAlign(hAlign);
         //宋体五号字
         var paraProps = new ParagraphProperties();
-        paraProps.Append(Fonts.GetFontProp(SimSun, Size5));
+        paraProps.Append(DocFonts.GetFontProp(SimSun, Size5));
         para.Append(paraProps);
 
         var run = new Run();
-        run.Append(Fonts.GetFontProp(SimSun, Size5));
+        run.Append(DocFonts.GetFontProp(SimSun, Size5));
         run.Append(new Text(text));
         para.Append(run);
 
@@ -154,11 +154,11 @@ public static class Tables
         para.SetParagraphHorizontalAlign(JustificationValues.Center);
         //黑体五号字
         var paraProps = new ParagraphProperties();
-        paraProps.Append(Fonts.GetFontProp(SimHei, Size5));
+        paraProps.Append(DocFonts.GetFontProp(SimHei, Size5));
         para.Append(paraProps);
 
         var run = new Run();
-        run.Append(Fonts.GetFontProp(SimHei, Size5));
+        run.Append(DocFonts.GetFontProp(SimHei, Size5));
         run.Append(new Text(tableName));
         para.Append(run);
 

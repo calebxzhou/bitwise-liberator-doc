@@ -6,7 +6,7 @@ namespace LiberatorDoc.DocOps;
 public class DocBodies
 {
     ///正文： 
-    public static Paragraph CreateMainBody(string text)
+    public static Paragraph Main(string text)
     {
         var para = new Paragraph();
         //两端对齐
@@ -17,11 +17,11 @@ public class DocBodies
         text = ChineseSpace + ChineseSpace + text;
         var paraProps = new ParagraphProperties();
         // 小四号，宋体
-        paraProps.Append(Fonts.GetFontProp(SimSun,Size4S));
+        paraProps.Append(DocFonts.GetFontProp(SimSun,Size4S));
         para.Append(paraProps);
         var run = new Run();
         // 小四号，宋体
-        run.Append(Fonts.GetFontProp(SimSun,Size4S));
+        run.Append(DocFonts.GetFontProp(SimSun,Size4S));
         run.Append(new Text(text));
         para.Append(run);
         return para;

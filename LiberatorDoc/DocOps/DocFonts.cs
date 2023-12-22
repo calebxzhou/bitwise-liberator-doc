@@ -2,7 +2,7 @@
 
 namespace LiberatorDoc.DocOps;
 
-public class Fonts
+public static class DocFonts
 {
     
     /// <summary>
@@ -18,6 +18,13 @@ public class Fonts
         paraRunProps.Append(new FontSize() { Val = $"{fontSize}" });
         paraRunProps.Append(new FontSizeComplexScript() { Val = $"{fontSize}" });
         return paraRunProps;
-    } 
+    }
+
+    public static void AppendFontProp(this RunProperties paraRunProps,string fontName, int fontSize)
+    {
+        paraRunProps.Append(new RunFonts() { Ascii = DocConst.TimesNewRoman, EastAsia = fontName, HighAnsi = fontName,Hint  = FontTypeHintValues.EastAsia});
+        paraRunProps.Append(new FontSize() { Val = $"{fontSize}" });
+        paraRunProps.Append(new FontSizeComplexScript() { Val = $"{fontSize}" });
+    }
 
 }
