@@ -2,12 +2,13 @@
 
 namespace LiberatorDoc.DocOps;
 
-public static class Paragraphs
+public static class DocParagraphs
 {
     //设定段落行间距22磅 前后指定 
-    public static void SetParagraphSpacing(this Paragraph paragraph,int beforeAfterSpace)
+    public static Paragraph SetSpacing(this Paragraph p,int beforeAfterSpace)
     {
-        paragraph.Append(new ParagraphProperties(
+        p.ParagraphProperties ??= new ParagraphProperties();
+        p.ParagraphProperties.Append(
             new SpacingBetweenLines()
             {
                 Before = $"{beforeAfterSpace}", 
@@ -15,23 +16,28 @@ public static class Paragraphs
                 Line = $"{DocConst.LineSpacing}", 
                 LineRule = LineSpacingRuleValues.Exact
             }
-        ));
+        );
+        return p;
     }
     //设定段落前后间距1行 
-    public static void SetParagraphBeforeAfterLines(this Paragraph paragraph)
+    public static Paragraph SetParagraphBeforeAfterLines(this Paragraph p)
     {
-        paragraph.Append(new ParagraphProperties(
+        p.ParagraphProperties ??= new ParagraphProperties();
+        p.ParagraphProperties.Append(
             new SpacingBetweenLines()
             {
                 BeforeLines = 100,AfterLines = 100
             }
-        ));
+        ); 
+        return p;
     }
     //设定段落对齐模式 水平
-    public static void SetParagraphHorizontalAlign(this Paragraph paragraph, JustificationValues hAlign)
+    public static Paragraph SetParagraphHorizontalAlign(this Paragraph p, JustificationValues hAlign)
     {
-        paragraph.Append(new ParagraphProperties(
+        p.ParagraphProperties ??= new ParagraphProperties();
+        p.ParagraphProperties.Append(
             new Justification() { Val = hAlign }
-        )); 
+        );
+        return p;
     }  
 }

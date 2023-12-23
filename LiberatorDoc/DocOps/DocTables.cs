@@ -124,7 +124,7 @@ public static class DocTables
     {
         var para = new Paragraph();
         //段落对齐 行间距22磅 前后0
-        para.SetParagraphSpacing(0);
+        para.SetSpacing(0);
         para.SetParagraphHorizontalAlign(hAlign);
         //宋体五号字
         var paraProps = new ParagraphProperties();
@@ -150,7 +150,7 @@ public static class DocTables
     public static Paragraph CreateTableNameParagraph(string tableName)
     {
         var para = new Paragraph();
-        para.SetParagraphSpacing(0);
+        para.SetSpacing(0);
         para.SetParagraphHorizontalAlign(JustificationValues.Center);
         //黑体五号字
         var paraProps = new ParagraphProperties();

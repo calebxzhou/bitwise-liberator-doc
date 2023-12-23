@@ -13,7 +13,7 @@ public static class DocHeadings
         //居中
         para.SetParagraphHorizontalAlign(JustificationValues.Center);
         //段前、段后均为1行，行间距为固定值22磅；
-        para.SetParagraphSpacing(SpaceBeforeAfter1Line);
+        para.SetSpacing(SpaceBeforeAfter1Line);
         para.SetParagraphBeforeAfterLines();
         ParagraphProperties paraProps = new ParagraphProperties();
 
@@ -38,7 +38,7 @@ public static class DocHeadings
         //居左
         para.SetParagraphHorizontalAlign(JustificationValues.Left);
         //段前、段后均为1行，行间距为固定值22磅；
-        para.SetParagraphSpacing(SpaceBeforeAfter12);
+        para.SetSpacing(SpaceBeforeAfter12);
         para.SetParagraphBeforeAfterLines();
         ParagraphProperties paraProps = new ParagraphProperties();
         //设置为可折叠 
@@ -62,7 +62,7 @@ public static class DocHeadings
         //居左
         para.SetParagraphHorizontalAlign(JustificationValues.Left);
         //段前、段后均为6磅，行间距为固定值22磅；
-        para.SetParagraphSpacing(SpaceBeforeAfter6);
+        para.SetSpacing(SpaceBeforeAfter6);
         ParagraphProperties paraProps = new ParagraphProperties();
         // 小四号，黑体
         paraProps.Append(DocFonts.GetFontProp(SimHei, Size4S));
@@ -82,7 +82,7 @@ public static class DocHeadings
         //居左
         para.SetParagraphHorizontalAlign(JustificationValues.Left);
         // 行间距为固定值22磅；
-        para.SetParagraphSpacing(0);
+        para.SetSpacing(0);
         //首行缩进2字符
         text = ChineseSpace + ChineseSpace + text;
         ParagraphProperties paraProps = new ParagraphProperties();
@@ -100,7 +100,7 @@ public static class DocHeadings
     public static Paragraph H6(string text)
     {
         var para = new Paragraph();
-        para.SetParagraphSpacing(0);
+        para.SetSpacing(0);
         para.SetParagraphHorizontalAlign(JustificationValues.Center);
         //黑体五号字
         var paraProps = new ParagraphProperties();

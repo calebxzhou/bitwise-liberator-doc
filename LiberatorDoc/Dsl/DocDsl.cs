@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using LiberatorDoc.DocOps;
 
@@ -13,32 +14,17 @@ public record DocDslRow(DocElementType Type, params string[] Tokens)
 
 public static class DocDsl
 {
-    //th 表头 字+宽度+c居中l居左r居右b两端+s开头1空格
-    /*
-     h1 2 系统实现
-     h2 2.1 系统框架
-     p 地标旅游管理信息系统使用Django框架。工程目录结构图，如图2.1所示。
-     h6 图2.1 工程目录结构图
-     p middleware是修改Django或者response对象的钩子。浏览器从请求到响应的过程中，Django需要通过很多中间件来处理。middlewar包的说明表，如表2.1所示。
-     h6 表2.1 middleware包的说明表
-     th 文件名4536c 作用4536c
-     tr auth.py	进行权限管理
-     tr auth.py	进行权限管理
-     tr auth.py	进行权限管理
-     h3 test
-     h4 test
-     */
     public static void WriteDocxFromDsl(this MemoryStream stream, string dsl)
     {
         using var wDoc = Docs.New(stream);
         var mainPart = wDoc.AddMainDocumentPart();
         mainPart.Document = new Document();
-        Body body = new Body(); 
-        foreach (var element in CompileRowsToXmlElements(CompileDslToRows(dsl)))
+        Body body = new Body();
+        mainPart.Document.Body = body;
+        foreach (var element in CompileRowsToXmlElements(mainPart,CompileDslToRows(dsl)))
         {
-            body.Append(element);
+            mainPart.Document.Body.AppendChild(element);
         }
-        mainPart.Document.AppendChild(body);
         mainPart.Document.Save();
     }
     //把dsl编译成row列表
@@ -57,7 +43,8 @@ public static class DocDsl
         return dslRows;
     }
     //把row列表编译成ooxml
-    private static List<OpenXmlElement> CompileRowsToXmlElements(IReadOnlyList<DocDslRow> rows)
+    private static List<OpenXmlElement> CompileRowsToXmlElements(MainDocumentPart wDoc,
+        IReadOnlyList<DocDslRow> rows)
     {
         var elements = new List<OpenXmlElement>();
         for (var i = 0; i < rows.Count; i++)
@@ -82,31 +69,42 @@ public static class DocDsl
                     elements.Add(DocHeadings.H6(mergedContent));
                     break;
                 case DocElementType.p:
-                    elements.Add(DocBodies.Main(mergedContent));
+                    elements.Add(DocTexts.MainBody(mergedContent));
                     break;
                 case DocElementType.th:
                     i += HandleTable(rows, i, elements);
                     break;
                 case DocElementType.img:
-                    //TODO
+                    var drawing = DocImages.AddImage(wDoc, mergedContent);
+                    elements.Add(new Paragraph(new Run(drawing)).SetParagraphHorizontalAlign(JustificationValues.Center));
                     break;
                 case DocElementType.tr:
-                    throw new InvalidDataException("编译DocDSL时，tr不应该被独立读取");
+                    //throw new InvalidDataException("编译DocDSL时，tr不应该被独立读取");
+                    break;
                 default:
                     throw new InvalidDataException("无效的DocElementType");
             }
         }
         return elements;
     }
+    //匹配表头格式 eg 文件名4536c 作用4536c
+    private static Regex ThRgx = new(@"([\u4e00-\u9fa5]+)(\d+)([a-zA-Z]{1,2})");
     //处理表格相关DSL，返回offset（index跳过后面的tr）
     private static int HandleTable(IReadOnlyList<DocDslRow> rows, int indexNow, List<OpenXmlElement> elements)
     {
         int offset = 0;
         //列属性
         var thRow = rows[indexNow];
-        var colProps = (from thRowToken in thRow.Tokens
-            let addSpace = thRowToken.EndsWith('s')
-            let align = thRowToken[^2] switch
+
+        var colProps = (from thToken in thRow.Tokens
+            select ThRgx.Match(thToken)
+            into match
+            where match.Success
+            let name = match.Groups[1].Value
+            let width = match.Groups[2].Value
+            let letters = match.Groups[3].Value
+            let addSpace = letters.EndsWith('s')
+            let align = letters[0] switch
             {
                 'l' => JustificationValues.Left,
                 'r' => JustificationValues.Right,
@@ -114,16 +112,15 @@ public static class DocDsl
                 'c' => JustificationValues.Center,
                 _ => JustificationValues.Center
             }
-            let width = Regex.Matches(thRowToken, @"\d+")[0].Value
-            let name = Regex.Matches(thRowToken, "[\u4e00-\u9fa5]")[0].Value
             select new TableColumnProps(Convert.ToInt32(width), name, align, addSpace)).ToArray();
         var tableData = new List<List<string>>();
-        //遇到表头，就把下面所有的表行读出来
-        while (rows[indexNow + 1].Type != DocElementType.tr)
+        //遇到表头，就把下面所有的表行读出来 
+        while (indexNow < rows.Count -1&& rows[indexNow + 1].Type == DocElementType.tr)
         {
+            indexNow++;
             var trRow = rows[indexNow];
             tableData.Add(trRow.Tokens.ToList());
-            indexNow++;
+            
             offset++;
         }
         elements.Add(DocTables.Create3LineTable(colProps,tableData));
