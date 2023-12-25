@@ -6,7 +6,7 @@ namespace LiberatorDoc.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class DocDslController : ControllerBase
+public class DocDslController : ControllerBase 
 {
     [HttpPost]
     public async Task<IActionResult> Post()

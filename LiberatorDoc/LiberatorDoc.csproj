@@ -10,12 +10,11 @@
     <ItemGroup>
         <PackageReference Include="DocumentFormat.OpenXml" Version="2.20.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0"/>
-        <PackageReference Include="SharpDocx" Version="2.4.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="DocDsl\" />
+      <None Remove="√模板-附件4：沈阳工学院毕业设计（论文）正文模板（2019版）-最新.docx - Shortcut.lnk" />
     </ItemGroup>
 
 </Project>
