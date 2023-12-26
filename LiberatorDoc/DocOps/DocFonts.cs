@@ -27,4 +27,16 @@ public static class DocFonts
         paraRunProps.Append(new FontSizeComplexScript() { Val = $"{fontSize}" });
     }
 
+    public static double GetFontHeight(int fontSize)
+    {
+        
+        // Estimate the font height in points
+        var pointSize = 0.35; // 1 point = 0.35 mm
+        var scalingFactor = 1.2; // for Arial font
+        var fontHeightInPoints = fontSize / 2.0 * scalingFactor;
+        Console.WriteLine("The estimated font height is {0} points", fontHeightInPoints);
+        // Convert the font height from points to DXA
+        double fontHeightInDxa = fontHeightInPoints * 20;
+        return fontHeightInDxa;
+    }
 }

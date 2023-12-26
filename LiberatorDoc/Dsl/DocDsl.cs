@@ -17,9 +17,30 @@ public static class DocDsl
     public static void WriteDocxFromDsl(this MemoryStream stream, string dsl)
     {
         using var wDoc = Docs.New(stream);
+        
+        //设定页高宽 边距
+        var secPr = new SectionProperties();
+        var pgSz = new PageSize
+        {
+            Width = 11900,
+            Height = 16840
+        };
+        var pgMar = new PageMargin
+        {
+            Top = 1700,
+            Right = 1135,
+            Bottom = 1700,
+            Left = 1700,
+            Header = 850,
+            Footer = 850
+
+        };
+        secPr.Append(pgSz);
+        secPr.Append(pgMar);
         var mainPart = wDoc.AddMainDocumentPart();
         mainPart.Document = new Document();
-        Body body = new Body();
+        var body = new Body();
+        body.Append(secPr);
         mainPart.Document.Body = body;
         foreach (var element in CompileRowsToXmlElements(mainPart,CompileDslToRows(dsl)))
         {
