@@ -1,3 +1,4 @@
+using LiberatorDoc.Controllers;
 using LiberatorDoc.Dsl;
 
 namespace LiberatorDocTest;
@@ -35,5 +36,9 @@ public class Tests
         }
         Assert.Pass();
     }
-    
+[Test]
+    public void Test2()
+    {
+        DocUpController.Process("/Users/calebzhou/Downloads/1(4).docx");
+    }
 }
