@@ -3,10 +3,7 @@ using static LiberatorDoc.DocOps.DocConst;
 
 namespace LiberatorDoc.DocOps;
 
-public record class TableColumnProps(int Width, string Header, JustificationValues HAlign, bool AddSpaceBefore)
-{
-    
-}
+public record TableColumnProps(int Width, string Header, JustificationValues HAlign, bool AddSpaceBefore);
 public static class DocTables
 {
     //三线表 表名+表格 段落

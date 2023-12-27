@@ -25,5 +25,6 @@ public static class DocConst
     public const int SpaceBeforeAfter6 = 120;
 //全角空格
     public const string ChineseSpace = "　";
-    
+    //最大文件尺寸
+    public const long MaxFileSize = 24 * 1024 * 1024; // 24MB
 }

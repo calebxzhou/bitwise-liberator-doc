@@ -9,7 +9,7 @@ public class Tests
     {
     }
 
-    [Test]
+   // [Test]
     public void Test1()
     {
         
@@ -39,6 +39,8 @@ public class Tests
 [Test]
     public void Test2()
     {
-        DocUpController.Process("/Users/calebzhou/Downloads/1(4).docx");
+        using FileStream fileStream = new FileStream("/Users/calebzhou/Downloads/1(4).docx", FileMode.Open, FileAccess.Read) ;
+        using FileStream fileStream2 = new FileStream("test.docx", FileMode.Create, FileAccess.Write) ;
+        DocUpController.ProcessTableOpt(fileStream,fileStream2);
     }
 }
