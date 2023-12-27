@@ -1,11 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using Aspose.Words;
-using Aspose.Words.Layout;
-using Aspose.Words.Tables;
 using Microsoft.AspNetCore.Mvc;
-using Document = Aspose.Words.Document;
-using Paragraph = Aspose.Words.Paragraph;
-using Table = Aspose.Words.Tables.Table;
 
 namespace LiberatorDoc.Controllers;
 
@@ -42,7 +36,7 @@ public class DocUpController : ControllerBase
     }
 
     //优化表格（三线表边框 添加续表）
-    public static void ProcessTableOpt(Stream fileIn,Stream fileOut)
+    /*public static void ProcessTableOpt(Stream fileIn,Stream fileOut)
     {
         var doc = new Document(fileIn);
         var nodes = doc.GetChildNodes(NodeType.Any, true).ToArray();
@@ -96,5 +90,5 @@ public class DocUpController : ControllerBase
         }
 
         doc.Save("test3.docx");
-    }
+    }*/
 }

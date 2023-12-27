@@ -58,14 +58,14 @@ public static class DocHeadings
 //创建三级标题： 
     public static Paragraph H3(string text)
     {
-        Paragraph para = new Paragraph();
+        var para = new Paragraph();
         //居左
         para.SetParagraphHorizontalAlign(JustificationValues.Left);
         //段前、段后均为6磅，行间距为固定值22磅；
         para.SetSpacing(SpaceBeforeAfter6);
-        ParagraphProperties paraProps = new ParagraphProperties();
+        var paraProps = new ParagraphProperties();
         //设置为可折叠 
-        OutlineLevel outlineLevel1 = new OutlineLevel() { Val = 3 };
+        var outlineLevel1 = new OutlineLevel() { Val = 3 };
         paraProps.Append(outlineLevel1);
         // 小四号，黑体
         paraProps.Append(DocFonts.GetFontProp(SimHei, Size4S));

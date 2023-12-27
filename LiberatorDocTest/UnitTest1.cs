@@ -1,3 +1,4 @@
+using System.Text.Json;
 using LiberatorDoc.Controllers;
 using LiberatorDoc.Dsl;
 
@@ -39,8 +40,8 @@ public class Tests
 [Test]
     public void Test2()
     {
-        using FileStream fileStream = new FileStream("/Users/calebzhou/Downloads/1(4).docx", FileMode.Open, FileAccess.Read) ;
-        using FileStream fileStream2 = new FileStream("test.docx", FileMode.Create, FileAccess.Write) ;
-        DocUpController.ProcessTableOpt(fileStream,fileStream2);
+        using FileStream fileStream = new FileStream("C:\\Users\\liberatorch\\Downloads\\1 (2).docx", FileMode.Open, FileAccess.Read) ;
+        var cont = DocTablesGetController.Process(fileStream);
+        Console.WriteLine(JsonSerializer.Serialize(cont));
     }
 }

@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using System.Text.RegularExpressions;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace LiberatorDoc.DocOps;
 
@@ -39,5 +40,6 @@ public static class DocParagraphs
             new Justification() { Val = hAlign }
         );
         return p;
-    }  
+    }
+     
 }

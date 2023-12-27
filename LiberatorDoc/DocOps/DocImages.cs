@@ -1,6 +1,8 @@
-﻿using DocumentFormat.OpenXml;
+﻿using System.Drawing;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using SixLabors.ImageSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using DW = DocumentFormat.OpenXml.Drawing.Wordprocessing;
 using PIC = DocumentFormat.OpenXml.Drawing.Pictures;
@@ -14,25 +16,26 @@ public class DocImages
         var imageBytes = Convert.FromBase64String(base64Image);
         var tempFilePath = Path.GetTempFileName();
         File.WriteAllBytes(tempFilePath, imageBytes);
-        var imagePart = mainPart.AddImagePart(ImagePartType.Jpeg);
+        var imagePart = mainPart.AddImagePart(ImagePartType.Png);
         // Copy the image to the Word document
         using (Stream stream = new FileStream(tempFilePath, FileMode.Open))
         {
             imagePart.FeedData(stream);
         }
 
-        var drawing = GetImageDrawing(mainPart.GetIdOfPart(imagePart));
+        var wh = GetImageWidthHeightEmu(imageBytes);
+        var drawing = GetImageDrawing(mainPart.GetIdOfPart(imagePart), wh.Item1, wh.Item2);
         // Delete the temporary file
         File.Delete(tempFilePath);
         return drawing;
     }
 
-    private static Drawing GetImageDrawing( string relationshipId)
+    private static Drawing GetImageDrawing(string relationshipId, long width, long height)
     {
         var element =
             new Drawing(
                 new DW.Inline(
-                    new DW.Extent() { Cx = 990000L, Cy = 792000L },
+                    new DW.Extent() { Cx = width, Cy = height },
                     new DW.EffectExtent()
                     {
                         LeftEdge = 0L,
@@ -54,7 +57,7 @@ public class DocImages
                                         new PIC.NonVisualDrawingProperties()
                                         {
                                             Id = (UInt32Value)0U,
-                                            Name = relationshipId+".jpg"
+                                            Name = relationshipId + ".jpg"
                                         },
                                         new PIC.NonVisualPictureDrawingProperties()),
                                     new PIC.BlipFill(
@@ -76,10 +79,10 @@ public class DocImages
                                     new PIC.ShapeProperties(
                                         new A.Transform2D(
                                             new A.Offset() { X = 0L, Y = 0L },
-                                            new A.Extents() { Cx = 990000L, Cy = 792000L }),
+                                            new A.Extents() { Cx = width, Cy = height }),
                                         new A.PresetGeometry(
                                                 new A.AdjustValueList()
-                                        )
+                                            )
                                             { Preset = A.ShapeTypeValues.Rectangle }))
                             )
                             { Uri = "http://schemas.openxmlformats.org/drawingml/2006/picture" })
@@ -91,8 +94,23 @@ public class DocImages
                     DistanceFromRight = (UInt32Value)0U,
                     EditId = "50D07946"
                 }
-                );
+            );
         // Append the reference to body, the element should be in a Run.
         return element;
+    }
+    public static (long, long) GetImageWidthHeightEmu(byte[] imageBytes)
+    {
+
+        using (var ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+        {
+            // Create an Image object from the MemoryStream
+            Image image = Image.Load(ms);
+
+            // Convert pixels to EMUs
+            long widthInEmus = image.Width * 9525;
+            long heightInEmus = image.Height * 9525;
+
+            return (widthInEmus, heightInEmus);
+        }
     }
 }
