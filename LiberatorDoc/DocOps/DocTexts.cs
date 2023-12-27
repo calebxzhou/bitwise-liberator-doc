@@ -10,7 +10,7 @@ public static class DocTexts
     {
         var para = new Paragraph();
         //两端对齐
-        para.SetParagraphHorizontalAlign(JustificationValues.Both);
+        para.SetHorizontalAlign(JustificationValues.Both);
         // 行间距为固定值22磅；
         para.SetSpacing(0);
         //首行缩进2字符

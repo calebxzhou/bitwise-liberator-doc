@@ -33,7 +33,7 @@ public static class DocParagraphs
         return p;
     }
     //设定段落对齐模式 水平
-    public static Paragraph SetParagraphHorizontalAlign(this Paragraph p, JustificationValues hAlign)
+    public static Paragraph SetHorizontalAlign(this Paragraph p, JustificationValues hAlign)
     {
         p.ParagraphProperties ??= new ParagraphProperties();
         p.ParagraphProperties.Append(

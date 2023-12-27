@@ -97,7 +97,7 @@ public static class DocDsl
                     break;
                 case DocElementType.img:
                     var drawing = DocImages.AddImage(wDoc, mergedContent);
-                    elements.Add(new Paragraph(new Run(drawing)).SetParagraphHorizontalAlign(JustificationValues.Center));
+                    elements.Add(new Paragraph(new Run(drawing)).SetHorizontalAlign(JustificationValues.Center));
                     break;
                 case DocElementType.tr:
                     //throw new InvalidDataException("编译DocDSL时，tr不应该被独立读取");

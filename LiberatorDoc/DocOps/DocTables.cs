@@ -122,7 +122,7 @@ public static class DocTables
         var para = new Paragraph();
         //段落对齐 行间距22磅 前后0
         para.SetSpacing(0);
-        para.SetParagraphHorizontalAlign(hAlign);
+        para.SetHorizontalAlign(hAlign);
         //宋体五号字
         var paraProps = new ParagraphProperties();
         paraProps.Append(DocFonts.GetFontProp(SimSun, Size5));
@@ -148,7 +148,7 @@ public static class DocTables
     {
         var para = new Paragraph();
         para.SetSpacing(0);
-        para.SetParagraphHorizontalAlign(JustificationValues.Center);
+        para.SetHorizontalAlign(JustificationValues.Center);
         //黑体五号字
         var paraProps = new ParagraphProperties();
         paraProps.Append(DocFonts.GetFontProp(SimHei, Size5));
