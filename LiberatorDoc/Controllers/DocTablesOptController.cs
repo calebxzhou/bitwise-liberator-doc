@@ -16,6 +16,7 @@ namespace LiberatorDoc.Controllers;
 public class DocTablesOptController : ControllerBase
 {
     public record Dto(string file, List<DocTableContinue> continues);
+
     //要添加续表的表和行
     [HttpPost]
     public async Task<IActionResult> Post()
@@ -29,11 +30,11 @@ public class DocTablesOptController : ControllerBase
 
         var dto = JsonSerializer.Deserialize<Dto>(body);
         byte[] byteArray = Convert.FromBase64String(dto.file);
-        using var  stream = new MemoryStream(byteArray);
+        using var stream = new MemoryStream(byteArray);
         using var outs = new MemoryStream();
-        Process(stream, dto.continues ,outs);
-        return File(outs.ToArray(), 
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document", 
+        Process(stream, dto.continues, outs);
+        return File(outs.ToArray(),
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "1.docx");
     }
 
@@ -41,48 +42,51 @@ public class DocTablesOptController : ControllerBase
     {
         stream.CopyTo(outs);
         using var doc = WordprocessingDocument.Open(outs, true);
-        var tables = doc.MainDocumentPart.Document.Body.Elements<Table>().ToArray();
-        if (continues.Count != tables.Length)
+        var body = doc.MainDocumentPart?.Document.Body;
+        if (body == null) return;
+        var tables = body.Elements<Table>().ToList();
+        foreach (var conti in continues)
         {
-          //  throw new ArgumentException("必须为每个表格指定续表！");
-        }
-        for (var i = 0; i < continues.Count; i++)
-        {
-            var conti = continues[i];
             var table = tables[conti.tableIndex];
-            if(conti.rowIndex<0)
+            if (conti.rowIndex < 0)
                 continue;
             var th = table.Elements<TableRow>().First().CloneNode(true);
-            // Create a new table and copy the before rows from the old table.
-            Table newTable1 = new Table();
+            // 续表行前 新表1
+            var newTbl = new Table();
             for (var j = 0; j < conti.rowIndex; j++)
             {
                 var row = (TableRow)table.Elements<TableRow>().ElementAt(j).CloneNode(true);
-                newTable1.Append(row);
+                newTbl.Append(row);
             }
-            // Insert the new table into the document.
-            doc.MainDocumentPart.Document.Body.InsertAfter(newTable1, table);
 
-            // Create a new paragraph with text "abc".
-            Paragraph newParagraph = DocHeadings.H6("续"+conti.tableName).SetHorizontalAlign(JustificationValues.Right);
+            // +新表1
+            body.InsertAfter(newTbl, table);
 
-            // Insert the new paragraph into the document.
-            doc.MainDocumentPart.Document.Body.InsertAfter(newParagraph, newTable1);
+            //续 x.x
+            var newParagraph = DocHeadings.H6("续" + conti.tableName).SetHorizontalAlign(JustificationValues.Right);
 
-            // Create another new table and copy the remaining rows from the old table.
-            Table newTable2 = new Table();
-            newTable2.Append(th);
-            for (int j =conti.rowIndex; j < table.Elements<TableRow>().Count(); j++)
+            //  +续xx
+            body.InsertAfter(newParagraph, newTbl);
+
+            // 续表行后 新表2
+            var newTbl2 = new Table();
+            //添加新表头
+            newTbl2.Append(th);
+            //续表行后 +新表data  +1为了跳过表头
+            for (var j = conti.rowIndex; j < table.Elements<TableRow>().Count(); j++)
             {
-                TableRow row = (TableRow)table.Elements<TableRow>().ElementAt(j).CloneNode(true);
-                newTable2.Append(row);
+                var row = (TableRow)table.Elements<TableRow>().ElementAt(j).CloneNode(true);
+                newTbl2.Append(row);
             }
 
-            // Insert the second new table into the document.
-            doc.MainDocumentPart.Document.Body.InsertAfter(newTable2, newParagraph);
+            // +新表2
+            body.InsertAfter(newTbl2, newParagraph);
             table.Remove();
-            
         }
- 
+
+        foreach (var table in tables)
+        {
+            DocTables.AdjustBorders(table);
+        }
     }
 }

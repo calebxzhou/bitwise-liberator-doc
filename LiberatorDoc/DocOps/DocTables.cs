@@ -4,17 +4,18 @@ using static LiberatorDoc.DocOps.DocConst;
 namespace LiberatorDoc.DocOps;
 
 public record TableColumnProps(int Width, string Header, JustificationValues HAlign, bool AddSpaceBefore);
+
 public static class DocTables
 {
     //三线表 表名+表格 段落
     public static Paragraph New(string tableName, TableColumnProps[] props, List<List<string>> datas)
     {
         var para = CreateTableNameParagraph(tableName);
-        para.Append( Create3LineTable(props,datas));
+        para.Append(Create3LineTable(props, datas));
         return para;
     }
 
-    public static Table Create3LineTable(TableColumnProps[] props,List<List<string>> contents)
+    public static Table Create3LineTable(TableColumnProps[] props, List<List<string>> contents)
     {
         var table = new Table();
         var tableProperties = new TableProperties();
@@ -34,9 +35,8 @@ public static class DocTables
 
         //绘制表头
         var headerRow = new TableRow();
-        for (var index = 0; index < props.Length; index++)
+        foreach (var prop in props)
         {
-            var prop = props[index];
             var header = prop.Header;
             var headerCell = CreateTextTableCellAlign(header, JustificationValues.Center,
                 TableVerticalAlignmentValues.Bottom, prop.Width);
@@ -84,33 +84,48 @@ public static class DocTables
     /// <param name="cell">单元格</param>
     /// <param name="topSize">上边框 尺寸</param>
     /// <param name="bottomSize">下边框 尺寸</param>
-    private static void SetCellBorders(this TableCell cell, uint topSize, uint bottomSize)
+    private static void SetCellBorders(this TableCell cell, int topSize, int bottomSize)
     {
-        TableCellBorders borders = new TableCellBorders();
-        if (bottomSize > 0)
+        
+        var borders = new TableCellBorders();
+        switch (bottomSize)
         {
-            var bottomBorder = new BottomBorder()
-            {
-                Val = BorderValues.Single,
-                Size = bottomSize,
-                Color = "auto"
-            };
-
-            borders.Append(bottomBorder);
+            case > 0:
+                borders.Append(new BottomBorder()
+                {
+                    Val = BorderValues.Single,
+                    Size = (uint)bottomSize,
+                    Color = "auto"
+                });
+                break;
+            case < 0:
+                //<0 删边框
+                borders.RemoveAllChildren<BottomBorder>();
+                break;
         }
-        if (topSize > 0)
+
+        switch (topSize)
         {
-            var topBorder = new TopBorder()
-            {
-                Val = BorderValues.Single,
-                Size = topSize,
-                Color = "auto"
-            };
-
-            borders.Append(topBorder);
+            case > 0:
+                borders.Append(new TopBorder()
+                {
+                    Val = BorderValues.Single,
+                    Size = (uint)topSize,
+                    Color = "auto"
+                });
+                break;
+            case < 0:
+                //<0 删边框
+                borders.RemoveAllChildren<TopBorder>();
+                break;
         }
-        TableCellProperties cellProperties = cell.AppendChild(new TableCellProperties());
-        cellProperties.Append(borders);
+        //删除左右边框
+        borders.RemoveAllChildren<LeftBorder>();
+        borders.RemoveAllChildren<RightBorder>();
+        //删除所有单元格旧格式
+        cell.RemoveAllChildren<TableCellProperties>();
+        cell.TableCellProperties ??= new TableCellProperties();
+        cell.TableCellProperties.Append(borders);
     }
 
     //创建单元格 文字，水平对齐，垂直对齐，宽度
@@ -143,6 +158,7 @@ public static class DocTables
         cell.Append(para);
         return cell;
     }
+
     //表名段落 （eg 表3.1 管理员端的测试表）
     public static Paragraph CreateTableNameParagraph(string tableName)
     {
@@ -160,5 +176,63 @@ public static class DocTables
         para.Append(run);
 
         return para;
+    }
+
+    //重绘表格 调整
+    public static void AdjustBorders(Table table)
+    {
+        //删除所有旧格式
+       // table.RemoveAllChildren<TableProperties>();
+        //表头设置边框 表头上1磅下0.75磅
+        foreach (var cell in table.Elements<TableRow>().First().Elements<TableCell>())
+        {
+            cell.SetCellBorders(8,6);
+        }
+        //最后一行 设定底边框1磅
+        foreach (var cell in table.Elements<TableRow>().Last().Elements<TableCell>())
+        {
+            cell.SetCellBorders( 0, 8);
+        }
+        //中间的行 没有下边框
+        foreach(var row in table.Elements<TableRow>().Skip(1).TakeWhile((row, index) => index < table.Elements<TableRow>().Count() - 2))
+        {
+            foreach (var cell in row.Elements<TableCell>())
+            {
+                cell.SetCellBorders(0,-1);
+            }
+        }
+
+        table.Append(new TableProperties(
+            //设定表格宽度 6.3''
+            new TableWidth
+            {
+                Width = "9072", 
+                Type = TableWidthUnitValues.Dxa
+            }
+        ));
+        table.Append(new TableProperties(
+            
+            //单元格间距
+            new TableCellMarginDefault(
+                new TopMargin
+                {
+                    Width = "0",
+                    Type = TableWidthUnitValues.Dxa
+                }, new BottomMargin
+                {
+                    Width = "0",
+                    Type = TableWidthUnitValues.Dxa
+                },
+                new LeftMargin
+                {
+                    Width = "100",
+                    Type = TableWidthUnitValues.Dxa
+                },
+                new RightMargin
+                {
+                    Width = "100",
+                    Type = TableWidthUnitValues.Dxa
+                })
+        ));
     }
 }
