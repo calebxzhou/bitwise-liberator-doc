@@ -13,21 +13,25 @@ namespace LiberatorDoc.Controllers;
 //上传word 返回表格信息
 [ApiController]
 [Route("[controller]")]
-public class DocTablesOptController : ControllerBase 
+public class DocTablesOptController : ControllerBase
 {
+    public record Dto(string file, List<DocTableContinue> continues);
     //要添加续表的表和行
     [HttpPost]
-    public async Task<IActionResult> Post(IFormFile file,List<DocTableContinue> continues)
+    public async Task<IActionResult> Post()
     {
-        if (file.Length is 0 or > DocConst.MaxFileSize)
+        using var reader = new StreamReader(Request.Body);
+        var body = await reader.ReadToEndAsync();
+        if (body.Length is 0 or > DocConst.MaxFileSize)
         {
             return BadRequest(">24MB || <0MB!");
         }
 
-        await using var stream = file.OpenReadStream();
-        
+        var dto = JsonSerializer.Deserialize<Dto>(body);
+        byte[] byteArray = Convert.FromBase64String(dto.file);
+        using var  stream = new MemoryStream(byteArray);
         using var outs = new MemoryStream();
-        Process(stream, continues,outs);
+        Process(stream, dto.continues ,outs);
         return File(outs.ToArray(), 
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document", 
             "1.docx");
@@ -40,18 +44,18 @@ public class DocTablesOptController : ControllerBase
         var tables = doc.MainDocumentPart.Document.Body.Elements<Table>().ToArray();
         if (continues.Count != tables.Length)
         {
-            throw new ArgumentException("必须为每个表格指定续表！");
+          //  throw new ArgumentException("必须为每个表格指定续表！");
         }
-        for (var i = 0; i < tables.Length; i++)
+        for (var i = 0; i < continues.Count; i++)
         {
-            var table = tables[i];
             var conti = continues[i];
-            if(conti.RowIndexForContinue<0)
+            var table = tables[conti.tableIndex];
+            if(conti.rowIndex<0)
                 continue;
             var th = table.Elements<TableRow>().First().CloneNode(true);
             // Create a new table and copy the before rows from the old table.
             Table newTable1 = new Table();
-            for (var j = 0; j < conti.RowIndexForContinue; j++)
+            for (var j = 0; j < conti.rowIndex; j++)
             {
                 var row = (TableRow)table.Elements<TableRow>().ElementAt(j).CloneNode(true);
                 newTable1.Append(row);
@@ -60,7 +64,7 @@ public class DocTablesOptController : ControllerBase
             doc.MainDocumentPart.Document.Body.InsertAfter(newTable1, table);
 
             // Create a new paragraph with text "abc".
-            Paragraph newParagraph = DocHeadings.H6("续"+conti.TableName).SetHorizontalAlign(JustificationValues.Right);
+            Paragraph newParagraph = DocHeadings.H6("续"+conti.tableName).SetHorizontalAlign(JustificationValues.Right);
 
             // Insert the new paragraph into the document.
             doc.MainDocumentPart.Document.Body.InsertAfter(newParagraph, newTable1);
@@ -68,7 +72,7 @@ public class DocTablesOptController : ControllerBase
             // Create another new table and copy the remaining rows from the old table.
             Table newTable2 = new Table();
             newTable2.Append(th);
-            for (int j =conti.RowIndexForContinue; j < table.Elements<TableRow>().Count(); j++)
+            for (int j =conti.rowIndex; j < table.Elements<TableRow>().Count(); j++)
             {
                 TableRow row = (TableRow)table.Elements<TableRow>().ElementAt(j).CloneNode(true);
                 newTable2.Append(row);

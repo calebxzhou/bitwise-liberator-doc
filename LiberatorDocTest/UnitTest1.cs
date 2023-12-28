@@ -43,12 +43,12 @@ public class Tests
     {
         using FileStream fileStream = new FileStream("C:\\Users\\liberatorch\\Downloads\\1 (2).docx", FileMode.Open, FileAccess.Read) ;
         using FileStream fileStream2 = new FileStream("C:\\Users\\liberatorch\\Downloads\\1 (3).docx", FileMode.Create, FileAccess.ReadWrite) ;
-        DocTablesOptController.Process(fileStream,[
+        /*DocTablesOptController.Process(fileStream,[
             new DocTableContinue("3.3",2),
             new DocTableContinue("3.3",2),
             new DocTableContinue("3.3",2),
             new DocTableContinue("3.3",2)
-        ],fileStream2);
+        ],fileStream2);*/
         
     }
 }

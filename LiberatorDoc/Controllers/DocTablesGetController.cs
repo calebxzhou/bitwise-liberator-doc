@@ -43,7 +43,6 @@ public class DocTablesGetController : ControllerBase
                 var match = Regex.Match(para.InnerText, pattern);
                 //是表名段落
                 if(!match.Success) continue;
-                Console.WriteLine(para.InnerText);
                 //找段落的下一个元素（表）
                 Table? table = null;
                 for (var ii = i; ii < elements.Length; ii++)
